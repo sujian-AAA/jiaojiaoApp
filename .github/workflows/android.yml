@@ -1,29 +1,52 @@
 name: Build APK
+
 on: [push, workflow_dispatch]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      - uses: actions/setup-node@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
-      - uses: android-actions/setup-android@v2
-      - run: yes | sdkmanager --licenses || true
-      - run: npm install -g cordova@11.1.0
       
-      - name: Build
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
+      
+      - name: Accept Android licenses
+        run: yes | sdkmanager --licenses || true
+      
+      - name: Install Cordova
+        run: npm install -g cordova@11.1.0
+      
+      - name: Clean and Build
+        working-directory: ./jiaojiao-cordova
         run: |
-          cd jiaojiao-cordova
+          # 强制清理
+          rm -rf platforms plugins node_modules
+          
+          # 重新安装
           npm install
+          
+          # 添加平台
           cordova platform add android@11.0.0
+          
+          # 构建
           cordova build android
       
-      - uses: actions/upload-artifact@v4
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: 娇娇-APK
-          path: jiaojiao-cordova/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+          path: jiaojiao-cordova/platforms/android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: warn
