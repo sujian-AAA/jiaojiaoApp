@@ -17,11 +17,16 @@ jobs:
       - run: npm install -g cordova@11.1.0
       
       - name: Build
-        working-directory: ./jiaojiao-cordova
         run: |
-          rm -rf node_modules platforms
+          cd jiaojiao-cordova
+          rm -rf node_modules
           npm install
-          cordova platform add android@11.0.0
+          # 检查platform是否存在
+          if [ -d "platforms/android" ]; then
+            cordova clean android
+          else
+            cordova platform add android@11.0.0
+          fi
           cordova build android
       
       - uses: actions/upload-artifact@v4
