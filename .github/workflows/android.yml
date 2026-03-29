@@ -29,19 +29,27 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova@11.1.0
       
-      - name: Clean and Build
+      - name: Install dependencies
         working-directory: ./jiaojiao-cordova
         run: |
-          # 强制清理
-          rm -rf platforms plugins node_modules
-          
-          # 重新安装
+          rm -rf node_modules
           npm install
-          
-          # 添加平台
+      
+      - name: Remove existing platform
+        working-directory: ./jiaojiao-cordova
+        run: |
+          cordova platform rm android 2>/dev/null || true
+          rm -rf platforms/android
+          rm -rf plugins
+      
+      - name: Add Android platform
+        working-directory: ./jiaojiao-cordova
+        run: |
           cordova platform add android@11.0.0
-          
-          # 构建
+      
+      - name: Build APK
+        working-directory: ./jiaojiao-cordova
+        run: |
           cordova build android
       
       - name: Upload APK
