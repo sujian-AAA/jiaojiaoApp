@@ -19,8 +19,6 @@ jobs:
       - name: Build
         run: |
           cd jiaojiao-cordova
-          # 彻底清理
-          rm -rf node_modules platforms plugins
           npm install
           cordova platform add android@11.0.0
           cordova build android
