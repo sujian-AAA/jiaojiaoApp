@@ -19,14 +19,10 @@ jobs:
       - name: Build
         run: |
           cd jiaojiao-cordova
-          rm -rf node_modules
+          # 彻底清理
+          rm -rf node_modules platforms plugins
           npm install
-          # 检查platform是否存在
-          if [ -d "platforms/android" ]; then
-            cordova clean android
-          else
-            cordova platform add android@11.0.0
-          fi
+          cordova platform add android@11.0.0
           cordova build android
       
       - uses: actions/upload-artifact@v4
